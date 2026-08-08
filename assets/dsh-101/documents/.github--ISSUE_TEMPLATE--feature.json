@@ -1,0 +1,1 @@
+{"id":".github--ISSUE_TEMPLATE--feature","variants":{"en":{"title":".github/ISSUE_TEMPLATE/feature.md","summary":"<!-- 标题写中文行动或结果句；外露正文不超过 50 单位。 -- 一句话说明预期结果。","body":"<!-- 标题写中文行动或结果句；外露正文不超过 50 单位。 -->\n一句话说明预期结果。\n\n<details>\n<summary>验收与细节</summary>\n\n- 验收条件：\n- 用户或模型可见变化：\n- 测试证据：\n\n</details>","sections":[]}}}

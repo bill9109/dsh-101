@@ -1,0 +1,914 @@
+/* DSH 101 reader shell styles. The shell owns its own palette on top of the
+   harness token system: neutral surfaces, a narrow tree rail, an article
+   measure, and a fixed tutor pane. */
+
+.shell {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr) auto;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.tree {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border-right: 1px solid var(--dsw-border, rgba(128, 128, 128, 0.25));
+  overflow: hidden;
+  background: var(--dsw-surface, #fafafa);
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.brand p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.sidebarToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  /* Circular control, matching the main GUI's sidebar icon buttons. */
+  border-radius: 50%;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary, rgba(128, 128, 128, 0.85));
+  cursor: pointer;
+}
+
+.sidebarToggle:hover {
+  color: var(--dsw-alias-label-primary, inherit);
+  background: var(--dsw-alias-interactive-bg-hover, rgba(128, 128, 128, 0.12));
+}
+
+/* Collapsed sidebar rail. */
+.shellCollapsed {
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+}
+
+.treeCollapsed {
+  padding: 12px 8px;
+  align-items: center;
+}
+
+.treeCollapsed .topRow {
+  justify-content: center;
+  margin-bottom: 0;
+}
+
+.langSwitch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 104px;
+  height: 26px;
+  border-radius: 999px;
+  background: var(--dsw-alias-interactive-bg-hover, rgba(128, 128, 128, 0.14));
+  padding: 2px;
+  box-sizing: border-box;
+}
+
+.langThumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 50px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--dsw-alias-surface-strong, #ffffff);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+  transition: transform 0.18s ease;
+}
+
+.langThumbZh {
+  transform: translateX(0);
+}
+
+.langThumb:not(.langThumbZh) {
+  transform: translateX(50px);
+}
+
+.langOption,
+.langOptionActive {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  height: 22px;
+  border: none;
+  background: transparent;
+  color: var(--dsw-alias-label-primary, inherit);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 999px;
+}
+
+.langOption {
+  opacity: 0.65;
+}
+
+.langOption:hover {
+  opacity: 0.9;
+}
+
+.searchForm {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  margin: 10px 0 12px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  border: 1px solid var(--dsw-alias-border-l2, rgba(128, 128, 128, 0.3));
+  border-radius: 24px;
+  background: var(--dsh-search-input-fill, rgba(128, 128, 128, 0.1));
+  color: var(--dsw-alias-label-caption, rgba(128, 128, 128, 0.7));
+  overflow: hidden;
+}
+
+.searchIcon {
+  flex: none;
+}
+
+.searchForm input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--dsw-alias-label-primary, inherit);
+}
+
+.searchForm input::placeholder {
+  color: var(--dsw-alias-label-tertiary, rgba(128, 128, 128, 0.55));
+}
+
+.treeList {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Slide the scrollbar into the nav's right padding (16px): extend the list
+     over the padding area and push content back with the same padding. */
+  width: calc(100% + 16px);
+  margin-right: -16px;
+  padding-right: 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  /* Overlay scrollbar: transparent by default, shown while scrolling. */
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.treeList.scrollbarVisible {
+  scrollbar-color: var(--dsw-alias-scrollbar-bg-l2, rgba(128, 128, 128, 0.45)) transparent;
+}
+
+.treeList::-webkit-scrollbar,
+.main::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.treeList::-webkit-scrollbar-thumb,
+.main::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 4px;
+  transition: background-color 0.25s ease;
+}
+
+.treeList.scrollbarVisible::-webkit-scrollbar-thumb,
+.main.scrollbarVisible::-webkit-scrollbar-thumb {
+  background: var(--dsw-alias-scrollbar-bg-l2, rgba(128, 128, 128, 0.45));
+}
+
+.treeHome,
+.treeDoc {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  min-width: 0;
+  width: 100%;
+  height: 34px;
+  box-sizing: border-box;
+  text-align: left;
+  border: none;
+  background: transparent;
+  color: var(--dsw-alias-label-primary, inherit);
+  cursor: pointer;
+  padding: 0 8px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 20px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+
+.treeHome:hover,
+.treeDoc:hover {
+  background: var(--dsw-alias-interactive-bg-hover, rgba(128, 128, 128, 0.12));
+}
+
+.treeDocActive,
+.treeHomeActive {
+  background: var(--dsw-alias-interactive-bg-active, rgba(128, 128, 128, 0.18));
+  font-weight: 500;
+}
+
+.treeDocActive:hover,
+.treeHomeActive:hover {
+  background: var(--dsw-alias-interactive-bg-active, rgba(128, 128, 128, 0.18));
+}
+
+.treeModule {
+  margin-top: 4px;
+}
+
+.treeModuleTitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+  border: none;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary, inherit);
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.treeModuleTitle:hover {
+  background: var(--dsw-alias-interactive-bg-hover, rgba(128, 128, 128, 0.12));
+}
+
+.treeModuleLabel {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.arrow {
+  flex: none;
+  color: var(--dsw-alias-label-caption, rgba(128, 128, 128, 0.7));
+  transition: transform 150ms var(--ds-ease-in-out, ease-in-out);
+}
+
+.arrowOpen {
+  transform: rotate(90deg);
+}
+
+.treeEmpty {
+  padding: 2px 8px 2px 22px;
+  font-size: 12px;
+  opacity: 0.4;
+}
+
+/* Agent Notes date separator: grey like module titles, collapsible. */
+.treeDateLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  border: none;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary, rgba(128, 128, 128, 0.85));
+  cursor: pointer;
+  padding: 6px 8px;
+  font-size: 12px;
+  text-align: left;
+  border-radius: 8px;
+  margin-bottom: 4px;
+}
+
+.treeDateLabel:hover {
+  background: var(--dsw-alias-interactive-bg-hover, rgba(128, 128, 128, 0.12));
+}
+
+.main {
+  min-width: 0;
+  overflow-y: auto;
+  padding: 24px 32px;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.main.scrollbarVisible {
+  scrollbar-color: var(--dsw-alias-scrollbar-bg-l2, rgba(128, 128, 128, 0.45)) transparent;
+}
+
+.pane {
+  max-width: 780px;
+}
+
+.pane h2 {
+  margin-top: 0;
+}
+
+.homeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.homeCard {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  padding: 14px;
+  border: 1px solid var(--dsw-border, rgba(128, 128, 128, 0.3));
+  border-radius: 10px;
+  background: var(--dsw-surface, #fff);
+  cursor: pointer;
+  color: inherit;
+}
+
+.homeCard:hover {
+  border-color: var(--dsw-accent, rgba(0, 122, 255, 0.6));
+}
+
+.homeCard strong {
+  font-size: 15px;
+}
+
+.homeCard span {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.homeCard em {
+  font-size: 11px;
+  opacity: 0.5;
+  font-style: normal;
+}
+
+.article {
+  max-width: 780px;
+  /* Center the reading column on wide displays (the rail lives in main's
+     left padding, so the article itself centers within the content area). */
+  margin: 0 auto;
+}
+
+.articleHead h2 {
+  margin: 0 0 4px;
+}
+
+.articleMeta {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.fallback {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 12px;
+  color: #b26a00;
+}
+
+.translateBtn {
+  margin-left: 10px;
+  padding: 4px 12px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--dsw-accent, #007aff);
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.articleLayout {
+  position: relative;
+}
+
+/* The rail lives inside main's left padding area, so the article body starts
+   at the same x with or without a table of contents. */
+.tocSlot {
+  position: absolute;
+  left: -32px;
+  /* Start below the article header (~76px into the content area) and stretch
+     to the layout bottom so the sticky rail has room to stay put while the
+     article scrolls. */
+  top: 76px;
+  bottom: 0;
+  width: 28px;
+}
+
+/* Left high-density tick rail (chat-history-locator style): each section is a
+   short tick; hovering/focusing brightens it and reveals a preview card. */
+.tocRail {
+  position: sticky;
+  top: 24px;
+  /* Must paint above the sibling article: the rail creates its own stacking
+     context, so without a z-index the article (later in DOM order) draws
+     over it and its hover cards look transparent / text bleeds through. */
+  z-index: 2;
+  width: 28px;
+  /* Sticky rest below the article header; height reaches main's bottom
+     padding (24px top padding + 76px header offset + 24px bottom padding). */
+  top: 76px;
+  height: calc(100vh - 124px);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 0;
+  box-sizing: border-box;
+  /* Must stay visible for the hover preview card to overflow the rail. */
+  overflow: visible;
+}
+
+.tocTick {
+  position: relative;
+  flex: none;
+  height: 14px;
+  display: block;
+  cursor: pointer;
+  text-decoration: none;
+  outline: none;
+}
+
+.tocTick::before {
+  --tick-w: 6px;
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 3px;
+  width: var(--tick-w);
+  max-width: var(--tick-w);
+  height: 2px;
+  transform: translateY(-50%);
+  border-radius: 1px;
+  background: color-mix(in srgb, var(--dsw-alias-label-secondary, #888), transparent 79%);
+  transition:
+    width 140ms cubic-bezier(0.22, 0.8, 0.28, 1),
+    max-width 140ms cubic-bezier(0.22, 0.8, 0.28, 1),
+    height 140ms cubic-bezier(0.22, 0.8, 0.28, 1),
+    background 140ms ease;
+}
+
+/* Hover/focus peak + the following tick nudges out (gradient wave). */
+.tocTick:hover::before,
+.tocTick:focus-visible::before {
+  --tick-w: 22px;
+  height: 3px;
+  background: color-mix(in srgb, var(--dsw-alias-label-primary, #333), transparent 12%);
+}
+
+.tocTick:hover + .tocTick::before {
+  --tick-w: 12px;
+  background: color-mix(in srgb, var(--dsw-alias-label-secondary, #888), transparent 62%);
+}
+
+.tocTick:focus-visible {
+  outline: 1px solid color-mix(in srgb, var(--dsw-alias-label-secondary, #888), transparent 55%);
+  outline-offset: -2px;
+}
+
+/* Hover preview card: index, heading, and a two-line excerpt. */
+.tickPreview {
+  position: absolute;
+  z-index: 8;
+  top: 50%;
+  left: 26px;
+  width: 300px;
+  transform: translateY(-50%);
+  padding: 12px 14px;
+  border: 1px solid rgba(128, 128, 128, 0.35);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+  background: #ffffff;
+  color: #1d1e20;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 110ms ease-out;
+}
+
+.tocTick:hover .tickPreview,
+.tocTick:focus-visible .tickPreview {
+  opacity: 1;
+  visibility: visible;
+}
+
+.tickPreview[data-ds-dark-theme] {
+  /* never needed: parent attribute lives on body */
+}
+
+body[data-ds-dark-theme] .tickPreview {
+  background: #1b1c1e;
+  color: #eceff1;
+}
+
+.tickIndex {
+  display: block;
+  margin-bottom: 5px;
+  color: rgba(128, 128, 128, 0.75);
+  font-size: 10px;
+  font-family: var(--dsw-font-mono, ui-monospace, monospace);
+  letter-spacing: 0.02em;
+}
+
+.tickPreview strong {
+  display: block;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 590;
+  line-height: 1.5;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body[data-ds-dark-theme] .tickPreview p {
+  color: #aeb4b9;
+}
+
+body[data-ds-dark-theme] .tickIndex {
+  color: rgba(236, 239, 241, 0.6);
+}
+
+.tickPreview p {
+  display: -webkit-box;
+  margin: 6px 0 0;
+  overflow: hidden;
+  color: #5b5f64;
+  font-size: 11px;
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+/* Narrow screens: the rail slot is dropped; the article takes the full width. */
+@media (max-width: 900px) {
+  .tocSlot {
+    display: none;
+  }
+
+  .articleLayout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.articleBody {
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+/* The article header already shows the title; the body's leading markdown
+   H1 (the document title) would duplicate it — hide the first H1. */
+.articleBody h1:first-of-type {
+  display: none;
+}
+
+.articleBody a {
+  color: var(--dsw-accent, #007aff);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.articleBody a:hover {
+  opacity: 0.85;
+}
+
+.articleBody img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 12px 0;
+  border-radius: 8px;
+}
+
+.articleBody h1,
+.articleBody h2,
+.articleBody h3,
+.articleBody h4,
+.articleBody h5,
+.articleBody h6 {
+  margin: 1.4em 0 0.6em;
+  line-height: 1.3;
+  font-weight: 600;
+}
+
+.articleBody h1 { font-size: 24px; }
+.articleBody h2 { font-size: 20px; }
+.articleBody h3 { font-size: 17px; }
+.articleBody h4 { font-size: 15px; }
+
+.articleBody p {
+  margin: 0.7em 0;
+}
+
+.articleBody ul,
+.articleBody ol {
+  padding-left: 1.6em;
+  margin: 0.7em 0;
+}
+
+.articleBody li {
+  margin: 0.25em 0;
+}
+
+.articleBody code {
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  background: var(--dsw-alias-code-inline-bg, rgba(128, 128, 128, 0.14));
+  font-size: 0.9em;
+}
+
+.articleBody pre {
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--dsw-alias-code-block-bg, rgba(128, 128, 128, 0.1));
+  overflow-x: auto;
+  margin: 0.8em 0;
+}
+
+.articleBody pre code {
+  padding: 0;
+  background: transparent;
+  font-size: 13px;
+}
+
+.articleBody blockquote {
+  margin: 0.8em 0;
+  padding: 2px 0 2px 14px;
+  border-left: 3px solid var(--dsw-alias-border-l2, rgba(128, 128, 128, 0.35));
+  color: var(--dsw-alias-label-secondary, rgba(128, 128, 128, 0.9));
+}
+
+.articleBody table {
+  border-collapse: collapse;
+  margin: 0.8em 0;
+  /* Let the markdown renderer size the table by content (max-content with
+     per-column caps and a horizontal scroll wrapper); forcing width:100%
+     would squeeze wide tables (e.g. the 7-column capability seams table)
+     into narrow columns. */
+}
+
+.articleBody th,
+.articleBody td {
+  border: 1px solid var(--dsw-alias-border-l2, rgba(128, 128, 128, 0.3));
+  /* The base markdown table styles give the first/last columns zero
+     side padding to hug the table edge; a document reader wants uniform
+     cell padding instead, so pin it across all cells. */
+  padding: 6px 10px !important;
+  text-align: left;
+}
+
+.articleBody th {
+  background: var(--dsw-alias-interactive-bg-hover, rgba(128, 128, 128, 0.1));
+  font-weight: 600;
+}
+
+.articleBody hr {
+  border: none;
+  border-top: 1px solid var(--dsw-alias-border-l2, rgba(128, 128, 128, 0.3));
+  margin: 1.2em 0;
+}
+
+.tutor {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 380px;
+  border-left: 1px solid var(--dsw-border, rgba(128, 128, 128, 0.25));
+  background: var(--dsw-surface, #fafafa);
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Left-edge drag handle for resizing the tutor panel.
+   No visual indicator on hover — only the col-resize cursor. */
+.tutorResize {
+  position: absolute;
+  left: -3px;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  cursor: col-resize;
+  z-index: 3;
+}
+
+.tutorHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--dsw-border, rgba(128, 128, 128, 0.25));
+}
+
+.tutorHead button {
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.tutorBody {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* The session-list view hosts the real sidebar column (SidebarRoot), which
+   brings its own padding + design variables; this wrapper only sizes it. */
+.tutorWorkspace {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* The SidebarRoot toggle button is useless here: dsh-101's layout face is a
+   no-op (the reader has no collapsible sidebar to flip). Hide the control,
+   keeping the wordmark (New Session shortcut) and the New Session button. */
+.tutorWorkspace :global([aria-label="收起侧边栏"]),
+.tutorWorkspace :global([aria-label="Collapse sidebar"]) {
+  display: none;
+}
+
+/* Row-action menus in the workspace browser default to align='start' (open
+   rightward from the trigger). In the main GUI the sidebar sits at the
+   viewport's left edge, so that direction is fine; in the reader the tutor
+   panel docks at the RIGHT edge, so a rightward menu runs into the viewport
+   wall and clamps. Flip it: while a session/workspace row menu is open (the
+   row carries ui-workspace's _menuOpen token), pin any portaled menu to the
+   viewport's right edge instead of the inline left the Menu component wrote.
+   Menu portals to document.body with position:fixed, so `right` is relative
+   to the viewport — the tutor panel's right edge is the viewport edge here.
+   This is a dsh-101-only presentation tweak; no shared-package change. */
+:global(body):has(.tutorWorkspace [role="treeitem"][class*="_menuOpen"]) > [role="menu"] {
+  left: auto !important;
+  right: 12px !important;
+}
+
+/* Session-row hover cards (HoverCard) pin to the anchor's right edge
+   (left: r.right + 8). In the reader the tutor panel docks at the viewport's
+   right edge, so a card opening rightward runs off-screen. Flip it to the
+   LEFT of the whole tutor panel: the card's right edge lands just left of
+   the panel (--dsh101-tutor-width + 12px from the viewport right edge), so
+   the card sits over the article column, fully visible. HoverCard portals to
+   document.body with position:fixed and width 244px, so `right` is relative
+   to the viewport. dsh-101-only presentation tweak; no shared-package
+   change. The width variable is set on document.body by the reader. */
+:global(body):has(.tutorWorkspace [role="treeitem"][aria-selected]:hover) > [class*="_card"] {
+  left: auto !important;
+  right: calc(var(--dsh101-tutor-width, 420px) + 12px) !important;
+}
+
+/* Back-to-session-list button (left of the tutor title). */
+.tutorBack {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-right: 6px;
+  padding: 0;
+  /* Circular control, matching the main GUI's sidebar icon buttons. */
+  border-radius: 50%;
+}
+
+.tutorBack:hover {
+  background: var(--dsw-hover, rgba(128, 128, 128, 0.12));
+  opacity: 1 !important;
+}
+
+/* Minimize-tutor button (right of the tutor title): a circular icon button
+   like the main GUI's sidebar controls, with a window-minimize glyph. */
+.tutorMinimize {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary, rgba(128, 128, 128, 0.85));
+  cursor: pointer;
+}
+
+.tutorMinimize:hover {
+  color: var(--dsw-alias-label-primary, inherit);
+  background: var(--dsw-alias-interactive-bg-hover, rgba(128, 128, 128, 0.12));
+}
+
+.tutorOpen {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--dsw-accent, #007aff);
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.updateBanner {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  border: 1px solid var(--dsw-border, rgba(178, 106, 0, 0.5));
+  border-radius: 8px;
+  background: rgba(178, 106, 0, 0.08);
+  font-size: 12px;
+}
+
+.updateBanner button {
+  align-self: flex-start;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 5px;
+  background: var(--dsw-accent, #007aff);
+  color: #fff;
+  cursor: pointer;
+}
+
+.hit {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--dsw-border, rgba(128, 128, 128, 0.2));
+}
+
+.hitTitle {
+  display: block;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+}
+
+.hitMeta {
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+.hitSection {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 6px 8px;
+  margin-top: 4px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.hitSection:hover {
+  background: var(--dsw-hover, rgba(128, 128, 128, 0.1));
+}
+
+.hitSection span {
+  opacity: 0.7;
+  font-size: 12px;
+}
+
+.loading {
+  opacity: 0.5;
+}
+
+.error {
+  color: #c62828;
+  font-size: 13px;
+}
+

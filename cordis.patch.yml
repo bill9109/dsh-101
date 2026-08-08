@@ -1,0 +1,34 @@
+# The dsh-101 bundle patch: the document-first reader profile over the
+# dsh-base + dsh-web-app layers.
+#
+# Applied after dsh-web-app's insert. ui-layout (the default browser shell)
+# is DISABLED here: a disabled loader entry never materializes a fiber, so
+# the client-modules scan skips its bundle and the reader app's own `root`
+# registration (this profile's shell) is the only occupant of the built-in
+# root slot. ui-sidebar stays ENABLED: the reader's tutor session-list view
+# reuses the real sidebar column (SidebarRoot shell + ui-workspace browser),
+# registered through the `sidebar` hole the reader app declares in ui-layout's
+# absence. Everything else in the web-app roster (transport, sessions, theme,
+# locale, settings, models, conversation ecosystem) stays mounted, so the
+# reader's tutor pane renders the real conversation shell with zero
+# reimplementation.
+
+# Single-package aggregation: the reader app is the package root (so the
+# client-modules scan finds its dshClient declaration), and the tutor plugin
+# is the ./tutor subpath entry (host-only, no client bundle).
+
+- id: ui-layout
+  disabled: true
+
+- insert:
+    # The reader app: host half mounts the corpus service + /api/dsh101
+    # routes; its dshClient half registers the reader root and declares the
+    # conversation child slot. Named as the package root so client-modules
+    # can resolve package.json and discover the ./client bundle.
+    - id: dsh-101-app
+      name: '@dsh-external/dsh-101'
+
+    # The tutor plugin: model tools over the corpus, the curator skill, and
+    # per-session reading context. Host-only, so the subpath entry is fine.
+    - id: dsh-101-tutor
+      name: '@dsh-external/dsh-101/tutor'

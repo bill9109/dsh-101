@@ -1,0 +1,1 @@
+{"id":".github--ISSUE_TEMPLATE--idea","variants":{"en":{"title":".github/ISSUE_TEMPLATE/idea.md","summary":"<!-- 标题写中文行动或结果句；外露正文不超过 50 单位。 -- 一句话说明价值假设。","body":"<!-- 标题写中文行动或结果句；外露正文不超过 50 单位。 -->\n一句话说明价值假设。\n\n<details>\n<summary>价值与细节</summary>\n\n- 价值假设：\n- 需要验证：\n- 可能的后续工作：\n\n</details>","sections":[]}}}
