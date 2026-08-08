@@ -19,6 +19,9 @@ import { fileURLToPath } from 'node:url'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 
+// --corpus: regenerate the corpus from the resolved DSH checkout before building.
+const doCorpus = process.argv.includes('--corpus')
+
 function resolveCheckout() {
   if (process.env.DSH_CHECKOUT !== undefined && process.env.DSH_CHECKOUT !== '') {
     return resolve(process.env.DSH_CHECKOUT)
@@ -108,6 +111,19 @@ try {
       },
     })
     if (result.status !== 0) process.exit(result.status ?? 1)
+  }
+  // Regenerate the corpus first when requested (uses the checkout's tsx).
+  if (doCorpus) {
+    const tsx = checkout !== undefined ? join(checkout, 'node_modules', '.bin', 'tsx') : undefined
+    if (tsx !== undefined && existsSync(tsx)) {
+      const r = spawnSync(tsx, [join(root, 'scripts', 'gen-dsh-101-corpus.ts'), checkout], {
+        cwd: root,
+        stdio: 'inherit',
+      })
+      if (r.status !== 0) process.exit(r.status ?? 1)
+    } else {
+      console.warn('--corpus requested but no DSH checkout tsx found; skipping corpus regeneration')
+    }
   }
   run('tsc', ['-p', 'tsconfig.json'])
   run('tsdown', ['-c', 'tsdown.config.mjs'])

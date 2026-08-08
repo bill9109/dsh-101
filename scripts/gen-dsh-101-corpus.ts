@@ -19,8 +19,8 @@ import { copyFile, mkdir, readdir, readFile, stat, writeFile } from 'node:fs/pro
 import type { Dirent } from 'node:fs'
 import { basename, dirname, join, relative, resolve, sep } from 'node:path'
 
-const REPO = resolve(process.argv[2] ?? import.meta.dirname, '..')
-const OUT = resolve(process.argv[3] ?? join(REPO, 'packages/101/dsh-101-app/assets/dsh-101/corpus.json'))
+const REPO = resolve(process.argv[2] ?? join(import.meta.dirname, '..', '..'))
+const OUT = resolve(process.argv[3] ?? join(import.meta.dirname, '..', 'assets', 'dsh-101', 'corpus.json'))
 
 const LOCALE_SUFFIX = /\.(zh)\.md$/i
 

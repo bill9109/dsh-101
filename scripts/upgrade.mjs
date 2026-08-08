@@ -120,7 +120,21 @@ console.log('imports rewritten')
 
 // --- 3. corpus generator ---
 cpSync(join(dsh, 'scripts', 'gen-dsh-101-corpus.ts'), join(root, 'scripts', 'gen-dsh-101-corpus.ts'))
-console.log('corpus generator copied')
+// Re-apply the standalone-repo path adaptation (upstream's default OUT points
+// at its monorepo assets; here the corpus always lands in ./assets/dsh-101).
+const genPath = join(root, 'scripts', 'gen-dsh-101-corpus.ts')
+let genText = readFileSync(genPath, 'utf8')
+genText = genText
+  .replace(
+    "const REPO = resolve(process.argv[2] ?? import.meta.dirname, '..')",
+    "const REPO = resolve(process.argv[2] ?? join(import.meta.dirname, '..', '..'))",
+  )
+  .replace(
+    "const OUT = resolve(process.argv[3] ?? join(REPO, 'packages/101/dsh-101-app/assets/dsh-101/corpus.json'))",
+    "const OUT = resolve(process.argv[3] ?? join(import.meta.dirname, '..', 'assets', 'dsh-101', 'corpus.json'))",
+  )
+writeFileSync(genPath, genText)
+console.log('corpus generator copied (paths adapted for standalone repo)')
 
 // --- 4. regenerate corpus (unless skipped) ---
 if (doCorpus) {
