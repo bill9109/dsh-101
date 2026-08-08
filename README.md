@@ -1,6 +1,6 @@
 # @dsh-external/dsh-101
 
-**DSH 101** 文档阅读器 profile bundle：在 `dsh-base` + `dsh-web-app` 之上的文档优先阅读界面（模块树、文章阅读、搜索、导师面板）。单包聚合了上游的 `dsh-101-app`、`dsh-101-core`、`dsh-101-tutor` 三个包。
+**DSH 101** 文档阅读器 profile bundle：在 `dsh-base` + `dsh-web-app` 之上的文档优先阅读界面（模块树、文章阅读、搜索、导师面板）。
 
 ## 安装
 
