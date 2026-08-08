@@ -1,6 +1,6 @@
 # @dsh-external/dsh-101
 
-**DSH 101** 文档阅读器 profile bundle：在 `dsh-base` + `dsh-web-app` 之上的文档优先阅读界面（模块树、文章阅读、搜索、导师面板）。单包聚合了上游的 `dsh-101-app`、`dsh-101-core`、`dsh-101-tutor` 三个包（**不包含** `dsh-webbridge`）。
+**DSH 101** 文档阅读器 profile bundle：在 `dsh-base` + `dsh-web-app` 之上的文档优先阅读界面（模块树、文章阅读、搜索、导师面板）。单包聚合了上游的 `dsh-101-app`、`dsh-101-core`、`dsh-101-tutor` 三个包。
 
 ## 安装
 
@@ -86,15 +86,6 @@ node scripts/upgrade.mjs --checkout /path/to/upgraded-dsh
 git add -A && git commit -m "sync with DSH <snapshot>"
 git tag v0.2.0 && git push origin main --tags
 ```
-
-## 为什么单包聚合？
-
-- 消费者只需一个版本 / 一个 tag / 一次 `dsh plugin add`。
-- `client-modules` 扫描通过包根的 `dshClient` 声明发现浏览器 bundle，所以阅读器
-  app 行使用包根名（`@dsh-external/dsh-101`）；纯 host 的 tutor 行使用 `./tutor`
-  子路径。
-- app/core/tutor 之间的内部 import 已改写为相对路径，bundle 没有
-  `@deepseek-ai/dsh-101-*` 运行时依赖。
 
 ## License
 

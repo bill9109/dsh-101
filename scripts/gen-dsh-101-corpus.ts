@@ -334,6 +334,10 @@ async function main(): Promise<void> {
     const id = docIdOf(rel)
     const fileStat = await stat(join(REPO, rel))
     if (fileStat.size > MAX_FILE_BYTES) continue
+    // Exclude the dsh-webbridge package: this bundle does not ship it, so its
+    // README would advertise an unavailable tool surface. (Stable id check so
+    // the guard survives upstream path moves.)
+    if (rel.includes('packages/101/dsh-webbridge') || id.startsWith('packages--101--dsh-webbridge')) continue
     // Prefer the git committer date (semantic "last changed"); fall back to
     // the filesystem mtime outside a git checkout.
     const updatedAt = gitTimes.get(rel) ?? new Date(fileStat.mtimeMs).toISOString()
