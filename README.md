@@ -1,6 +1,16 @@
 # @dsh-external/dsh-101
 
-**DSH 101** 文档阅读器 profile bundle：在 `dsh-base` + `dsh-web-app` 之上的文档优先阅读界面（模块树、文章阅读、搜索、导师面板）。
+**DSH 101** 文档阅读器 profile bundle：构建于 `dsh-base` + `dsh-web-app` 之上的文档优先阅读界面。
+- 整理了 DSH 自带的文档，分门别类，有一定的顺序
+- 自带文档翻译能力
+- 有一个滑动式隐藏目录
+- 对话在右侧
+
+<img width="3024" height="1898" alt="8852f952459ac4f7ecca2808c5274933" src="https://github.com/user-attachments/assets/04c1f223-fa5b-46a9-ab0d-ec38f6b26e02" />
+
+<img width="3024" height="1898" alt="bad8b574910f7db9157c7d5e3125d54f" src="https://github.com/user-attachments/assets/3cd4b186-4a5f-4d33-9e2e-32e59948b747" />
+
+
 
 ## 安装（profile 分发）
 
@@ -27,7 +37,7 @@ dsh --profile dsh-101
 缺失的 `dsh-base`/`dsh-web-app` 层），触发 DSH 模块回退（供运行时解析内置 peer），
 然后 `dsh plugin --profile dsh-101 add` 安装本 bundle。
 
-**纯手动（等价、透明）**：
+**纯手动**：
 
 ```sh
 mkdir -p ~/.dsh/profiles/dsh-101
@@ -46,14 +56,7 @@ python3 -c "import json; print(json.load(open('$HOME/.dsh/profiles/dsh-101/packa
 # 期望：['@deepseek-ai/dsh-base', '@deepseek-ai/dsh-web-app', '@dsh-external/dsh-101']
 ```
 
-### 为什么需要 profile 目录而不是裸 `dsh plugin add`？
-
-`dsh plugin add` 初始化未知 profile 名时只给 `dsh-base` 一层（官方模板只覆盖
-`web`/`headless` 等内置名字）。本 bundle 运行在 `dsh-base` + `dsh-web-app` 两层之上
-（`httpServer` 等服务由 `dsh-web-app` 提供），裸 add 会缺层并报
-`waiting for service: httpServer`。`profile/` 目录显式带上 `dsh-web-app` 层。
-
-### 备选：装进官方 `web` profile
+### 备选：装进官方 `web` profile（不建议）
 
 如果你不介意 profile 名叫 `web`（官方模板自带 base + web-app），一条命令即可：
 
