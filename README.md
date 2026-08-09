@@ -2,13 +2,25 @@
 
 **DSH 101** 文档阅读器 profile bundle：在 `dsh-base` + `dsh-web-app` 之上的文档优先阅读界面（模块树、文章阅读、搜索、导师面板）。
 
-## 安装
+## 安装（标准做法）
 
-需要与同源的 DSH 安装（bundle 的 peer 依赖 —— `cordis`、`@deepseek-ai/dsh-*` —— 从 DSH 安装的模块闭包解析）。
+本 bundle 运行在 `dsh-base` + `dsh-web-app` 两层之上。**标准做法是把本 bundle 装进
+官方 `web` profile** —— 官方 `web` 模板自带这两层，一条命令即可（`pnpm-workspace.yaml`
+已内置 `autoInstallPeers: false`，git 安装不会去 npm registry 拉内置 `@deepseek-ai/*`
+peer）：
 
-**推荐使用一键安装脚本**（它会正确组合 `dsh-base` + `dsh-web-app` + 本 bundle 三层，
-并处理内置 peer 的解析；直接 `dsh plugin add` 会因缺少 `dsh-web-app` 层而报
-`waiting for service: httpServer`）：
+```sh
+dsh plugin --profile web add github:dsh-external/dsh-101#v0.1.0
+dsh --profile web
+```
+
+> 默认使用 `web` profile 的端口（3080）。若想与默认 web 并存（阅读器用独立端口，
+> 如 3081），见下方"独立 profile"。
+
+## 安装（独立 `dsh-101` profile）
+
+官方没有 `dsh-101` profile 模板（`dsh plugin add` 初始化未知 profile 名时只给
+`dsh-base`），所以独立 profile 需要手动补齐 `dsh-web-app` 层。仓库提供一键脚本：
 
 ```sh
 # 从 GitHub 安装（建议 pin 到 tag/commit），默认端口 3080：
