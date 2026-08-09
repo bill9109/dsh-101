@@ -1,0 +1,6 @@
+# dsh-101 reader: bind on port 3081 so it can run alongside the default
+# web profile's GUI on 3080. Edit or delete this file to change the port.
+- id: webserver
+  config:
+    host: 127.0.0.1
+    port: 3081

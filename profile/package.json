@@ -1,0 +1,6 @@
+{
+  "name": "dsh-profile-dsh-101",
+  "private": true,
+  "dependencies": {},
+  "dsh": { "profile": { "bundles": ["@deepseek-ai/dsh-base", "@deepseek-ai/dsh-web-app", "@dsh-external/dsh-101"] } }
+}

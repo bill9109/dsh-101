@@ -2,51 +2,64 @@
 
 **DSH 101** 文档阅读器 profile bundle：在 `dsh-base` + `dsh-web-app` 之上的文档优先阅读界面（模块树、文章阅读、搜索、导师面板）。
 
-## 安装（标准做法）
+## 安装（profile 分发）
 
-本 bundle 运行在 `dsh-base` + `dsh-web-app` 两层之上。**标准做法是把本 bundle 装进
-官方 `web` profile** —— 官方 `web` 模板自带这两层，一条命令即可（`pnpm-workspace.yaml`
-已内置 `autoInstallPeers: false`，git 安装不会去 npm registry 拉内置 `@deepseek-ai/*`
-peer）：
+本仓库同时包含 **bundle**（`@dsh-external/dsh-101`，可 `dsh plugin add`）和
+**`profile/` 目录**（完整的 `dsh-101` profile 组合：`dsh-base` + `dsh-web-app` +
+本 bundle）。DSH 官方模型是"分发 bundle、用户组合 profile"，官方没有分发 profile
+的命令，但 profile 本质是 `$DSH_HOME/profiles/<name>/` 下的一个目录 —— 仓库的
+`profile/` 就是可直接使用的 profile 内容。
 
-```sh
-dsh plugin --profile web add github:dsh-external/dsh-101#v0.1.0
-dsh --profile web
-```
-
-> 默认使用 `web` profile 的端口（3080）。若想与默认 web 并存（阅读器用独立端口，
-> 如 3081），见下方"独立 profile"。
-
-## 安装（独立 `dsh-101` profile）
-
-官方没有 `dsh-101` profile 模板（`dsh plugin add` 初始化未知 profile 名时只给
-`dsh-base`），所以独立 profile 需要手动补齐 `dsh-web-app` 层。仓库提供一键脚本：
+**推荐：一键脚本**（把 `profile/` 放到 `~/.dsh/profiles/dsh-101/` 并安装 bundle）：
 
 ```sh
-# 从 GitHub 安装（建议 pin 到 tag/commit），默认端口 3080：
+# 从 GitHub 安装（建议 pin 到 tag/commit）：
 bash <(curl -fsSL https://raw.githubusercontent.com/dsh-external/dsh-101/main/scripts/install.sh) github:dsh-external/dsh-101#v0.1.0
 
-# 或从本地 checkout 安装，并指定阅读器端口 3081（可与 3080 并存）：
+# 或从本地 checkout 安装，并指定端口（默认 3081）：
 ./scripts/install.sh --port 3081 .
 
-# 安装完成后启动：
+# 启动：
 dsh --profile dsh-101
 ```
 
-脚本做什么：
+脚本做的事：把 `profile/` 的三个文件放进 `$DSH_HOME/profiles/dsh-101/`（已有则只补
+缺失的 `dsh-base`/`dsh-web-app` 层），触发 DSH 模块回退（供运行时解析内置 peer），
+然后 `dsh plugin --profile dsh-101 add` 安装本 bundle。
 
-1. 在 `$DSH_HOME/profiles/dsh-101/` 初始化 profile（bundles 含 `dsh-base` + `dsh-web-app`，
-   并写入 `pnpm-workspace.yaml` 的 `autoInstallPeers: false` —— 避免 pnpm 去 registry
-   拉内置 `@deepseek-ai/*` peer）；
-2. 触发 DSH 模块回退（`$DSH_HOME/profiles/node_modules`）供运行时解析内置 peer；
-3. `dsh plugin --profile dsh-101 add` 本 bundle（GitHub 或本地）；
-4. 可选 `--port N` 写 `cordis.patch.yml` 绑定端口。
+**纯手动（等价、透明）**：
+
+```sh
+mkdir -p ~/.dsh/profiles/dsh-101
+cp profile/package.json profile/pnpm-workspace.yaml ~/.dsh/profiles/dsh-101/
+# 可选：端口 patch
+cp profile/cordis.patch.yml ~/.dsh/profiles/dsh-101/
+# 安装 bundle（会追加到 bundles 列表）
+dsh plugin --profile dsh-101 add github:dsh-external/dsh-101#v0.1.0
+dsh --profile dsh-101
+```
 
 验证 bundles 列表应包含三层：
 
 ```sh
 python3 -c "import json; print(json.load(open('$HOME/.dsh/profiles/dsh-101/package.json'))['dsh']['profile']['bundles'])"
 # 期望：['@deepseek-ai/dsh-base', '@deepseek-ai/dsh-web-app', '@dsh-external/dsh-101']
+```
+
+### 为什么需要 profile 目录而不是裸 `dsh plugin add`？
+
+`dsh plugin add` 初始化未知 profile 名时只给 `dsh-base` 一层（官方模板只覆盖
+`web`/`headless` 等内置名字）。本 bundle 运行在 `dsh-base` + `dsh-web-app` 两层之上
+（`httpServer` 等服务由 `dsh-web-app` 提供），裸 add 会缺层并报
+`waiting for service: httpServer`。`profile/` 目录显式带上 `dsh-web-app` 层。
+
+### 备选：装进官方 `web` profile
+
+如果你不介意 profile 名叫 `web`（官方模板自带 base + web-app），一条命令即可：
+
+```sh
+dsh plugin --profile web add github:dsh-external/dsh-101#v0.1.0
+dsh --profile web
 ```
 
 ### 端口
