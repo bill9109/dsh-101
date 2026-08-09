@@ -15,7 +15,7 @@
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { createHash } from 'node:crypto'
-import { copyFile, mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises'
+import { copyFile, mkdir, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import type { Dirent } from 'node:fs'
 import { basename, dirname, join, relative, resolve, sep } from 'node:path'
 
@@ -34,7 +34,16 @@ interface Section { heading: string; anchor: string; level: number; body: string
 
 interface Variant { title: string; summary: string; body: string; sections: Section[] }
 
-interface Doc { id: string; module: string; kind: string; sourcePath: string; variants: Record<string, Variant>; date?: string; updatedAt?: string; createdAt?: string }
+interface Doc {
+  id: string
+  module: string
+  kind: string
+  sourcePath: string
+  variants: Record<string, Variant>
+  date?: string
+  updatedAt?: string
+  createdAt?: string
+}
 
 interface ModuleDef { id: string; title: Record<string, string>; description: Record<string, string>; order: number }
 
@@ -66,12 +75,12 @@ function extractTitle(body: string): { title: string; body: string } {
   let rest = body
   if (frontmatter !== null) {
     rest = body.slice(frontmatter[0].length)
-    const titleMatch = /^title:\s*(.+)$/m.exec(frontmatter[1]!)
-    if (titleMatch !== null) title = titleMatch[1]!.trim().replace(/^["']|["']$/g, '')
+    const titleMatch = /^title:\s*(.+)$/m.exec(frontmatter[1] ?? '')
+    if (titleMatch !== null) title = (titleMatch[1] ?? '').trim().replace(/^["']|["']$/g, '')
   }
   if (title === '') {
     const heading = /^#\s+(.+)$/m.exec(rest)
-    if (heading !== null) title = heading[1]!.trim()
+    if (heading !== null) title = (heading[1] ?? '').trim()
   }
   return { title, body: rest.trim() }
 }
@@ -84,9 +93,9 @@ function extractSections(body: string): Section[] {
   for (const line of lines) {
     const match = /^(#{2,6})\s+(.+)$/.exec(line)
     if (match !== null) {
-      const heading = match[2]!.trim()
+      const heading = (match[2] ?? '').trim()
       if (current !== null) sections.push(current)
-      current = { heading, anchor: slugify(heading), level: match[1]!.length, body: '' }
+      current = { heading, anchor: slugify(heading), level: (match[1] ?? '').length, body: '' }
       continue
     }
     if (current === null) continue
@@ -214,8 +223,8 @@ function moduleInnerGroup(doc: { module: string; sourcePath: string }): number {
   const prefixes = MODULE_INNER_GROUPS[doc.module]
   if (prefixes === undefined) return 0
   if (doc.module === 'cordis') {
-    if (doc.sourcePath.startsWith(prefixes[0]!)) return 0
-    if (doc.sourcePath.startsWith(prefixes[1]!)) return 1
+    if (doc.sourcePath.startsWith(prefixes[0] ?? '')) return 0
+    if (doc.sourcePath.startsWith(prefixes[1] ?? '')) return 1
     return 2
   }
   const segs = doc.sourcePath.split('/')
@@ -325,8 +334,11 @@ async function main(): Promise<void> {
   const moduleOrder = new Map<string, number>()
   let nextOrder = 0
   const touchModule = (module: string): number => {
-    if (!moduleOrder.has(module)) moduleOrder.set(module, nextOrder++)
-    return moduleOrder.get(module)!
+    const existing = moduleOrder.get(module)
+    if (existing !== undefined) return existing
+    const order = nextOrder++
+    moduleOrder.set(module, order)
+    return order
   }
 
   for (const rel of files) {
@@ -355,7 +367,11 @@ async function main(): Promise<void> {
     touchModule(module)
     let doc = grouped.get(id)
     if (doc === undefined) {
-      doc = { id, module, kind, sourcePath: rel, variants: {}, updatedAt, ...(date !== undefined ? { date } : {}), ...(createdAt !== undefined ? { createdAt } : {}) }
+      doc = {
+        id, module, kind, sourcePath: rel, variants: {}, updatedAt,
+        ...(date !== undefined ? { date } : {}),
+        ...(createdAt !== undefined ? { createdAt } : {}),
+      }
       grouped.set(id, doc)
     } else {
       // Merge: zh variant joins the en doc (kind/module taken from en);
@@ -405,6 +421,12 @@ async function main(): Promise<void> {
   // per-document files under the assets dir and loaded on demand by the host.
   const docDir = join(dirname(OUT), 'documents')
   await mkdir(docDir, { recursive: true })
+  // The documents dir is fully regenerated: drop files from earlier trees so
+  // removed/renamed docs never linger on disk (the index lists current docs
+  // only, so orphaned files would be reachable only by direct id guesswork).
+  for (const existing of await readdir(docDir)) {
+    await rm(join(docDir, existing), { recursive: true, force: true })
+  }
   const indexDocuments: Record<string, unknown> = {}
   for (const [id, doc] of Object.entries(documents)) {
     const variants: Record<string, unknown> = {}
@@ -490,7 +512,7 @@ function titleOf(id: string): string {
   const last = id.split('--').pop() ?? id
   return last
     .split('-')
-    .map(word => (word === '' ? word : word[0]!.toUpperCase() + word.slice(1)))
+    .map(word => (word === '' ? word : word.charAt(0).toUpperCase() + word.slice(1)))
     .join(' ')
 }
 
