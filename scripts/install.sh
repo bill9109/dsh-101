@@ -53,6 +53,16 @@ else
   "dsh": { "profile": { "bundles": ["@deepseek-ai/dsh-base", "@deepseek-ai/dsh-web-app"] } }
 }
 EOF
+  # Same pnpm workspace settings `dsh plugin` writes on init: without
+  # autoInstallPeers:false, pnpm tries to install the in-box @deepseek-ai/*
+  # peers from the npm registry and fails (they are not published).
+  cat > "$PROFILE_DIR/pnpm-workspace.yaml" <<'EOF'
+packages:
+  - .
+
+nodeLinker: hoisted
+autoInstallPeers: false
+EOF
   echo "==> initialized $PROFILE_DIR (dsh-base + dsh-web-app)"
 fi
 
@@ -74,7 +84,14 @@ PYEOF
   echo "==> ensured dsh-web-app layer in $PROFILE_DIR/package.json"
 fi
 
-# 3) Install this bundle (pnpm add + append to bundles).
+# 3) Prime the DSH module fallback ($DSH_HOME/profiles/node_modules) so pnpm
+#    can resolve the in-box @deepseek-ai/* peers (they are NOT on npm, and the
+#    fallback is only created when dsh boots). --dump-config triggers the same
+#    prepareProfile → healProfilesModuleFallback path without booting a server.
+echo "==> priming DSH module fallback..."
+dsh --profile "$PROFILE_NAME" --dump-config >/dev/null 2>&1 || true
+
+# 4) Install this bundle (pnpm add + append to bundles).
 if [[ "$SOURCE" == "." || "$SOURCE" == "$ROOT" ]]; then
   cd "$ROOT"
   dsh plugin --profile "$PROFILE_NAME" add .
@@ -82,7 +99,7 @@ else
   dsh plugin --profile "$PROFILE_NAME" add "$SOURCE"
 fi
 
-# 4) Optional port patch.
+# 5) Optional port patch.
 if [[ -n "$PORT" ]]; then
   cat > "$PROFILE_DIR/cordis.patch.yml" <<EOF
 # dsh-101 reader: bind on port $PORT so it can run alongside the default

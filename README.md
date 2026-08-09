@@ -6,29 +6,29 @@
 
 需要与同源的 DSH 安装（bundle 的 peer 依赖 —— `cordis`、`@deepseek-ai/dsh-*` —— 从 DSH 安装的模块闭包解析）。
 
-本 bundle 运行在 `dsh-base` + `dsh-web-app` 两层之上，而这两个是 DSH 的**内置 bundle**（`dsh plugin add` 只管理外部包，不会自动补内置层）。因此首次安装请按下面**完整步骤**操作——只执行 `dsh plugin add` 会得到一个缺 `dsh-web-app` 的 profile，启动时报
-`waiting for service: httpServer`。
+**推荐使用一键安装脚本**（它会正确组合 `dsh-base` + `dsh-web-app` + 本 bundle 三层，
+并处理内置 peer 的解析；直接 `dsh plugin add` 会因缺少 `dsh-web-app` 层而报
+`waiting for service: httpServer`）：
 
 ```sh
-# 1) 初始化 profile 目录（含 dsh-base + dsh-web-app 两层）
-mkdir -p ~/.dsh/profiles/dsh-101
-cat > ~/.dsh/profiles/dsh-101/package.json <<'EOF'
-{
-  "name": "dsh-profile-dsh-101",
-  "private": true,
-  "dependencies": {},
-  "dsh": { "profile": { "bundles": ["@deepseek-ai/dsh-base", "@deepseek-ai/dsh-web-app"] } }
-}
-EOF
+# 从 GitHub 安装（建议 pin 到 tag/commit），默认端口 3080：
+bash <(curl -fsSL https://raw.githubusercontent.com/dsh-external/dsh-101/main/scripts/install.sh) github:dsh-external/dsh-101#v0.1.0
 
-# 2) 把本 bundle 加进 profile（会追加到 bundles 列表）
-cd /path/to/this-repo && dsh plugin --profile dsh-101 add .
-# 或从 GitHub（建议 pin 到 tag/commit）：
-# dsh plugin --profile dsh-101 add github:dsh-external/dsh-101#v0.1.0
+# 或从本地 checkout 安装，并指定阅读器端口 3081（可与 3080 并存）：
+./scripts/install.sh --port 3081 .
 
-# 3) 启动阅读器 profile（默认端口 3080；如需 3081 见下方"端口"）
+# 安装完成后启动：
 dsh --profile dsh-101
 ```
+
+脚本做什么：
+
+1. 在 `$DSH_HOME/profiles/dsh-101/` 初始化 profile（bundles 含 `dsh-base` + `dsh-web-app`，
+   并写入 `pnpm-workspace.yaml` 的 `autoInstallPeers: false` —— 避免 pnpm 去 registry
+   拉内置 `@deepseek-ai/*` peer）；
+2. 触发 DSH 模块回退（`$DSH_HOME/profiles/node_modules`）供运行时解析内置 peer；
+3. `dsh plugin --profile dsh-101 add` 本 bundle（GitHub 或本地）；
+4. 可选 `--port N` 写 `cordis.patch.yml` 绑定端口。
 
 验证 bundles 列表应包含三层：
 
@@ -40,7 +40,7 @@ python3 -c "import json; print(json.load(open('$HOME/.dsh/profiles/dsh-101/packa
 ### 端口
 
 默认使用 web profile 的 `:3080`。若想与 3080 并存（例如阅读器在 3081），在 profile 的
-`cordis.patch.yml` 里覆盖端口：
+`cordis.patch.yml` 里覆盖端口（或安装时传 `--port 3081`）：
 
 ```yaml
 - id: webserver
