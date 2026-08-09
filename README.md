@@ -6,20 +6,48 @@
 
 需要与同源的 DSH 安装（bundle 的 peer 依赖 —— `cordis`、`@deepseek-ai/dsh-*` —— 从 DSH 安装的模块闭包解析）。
 
+本 bundle 运行在 `dsh-base` + `dsh-web-app` 两层之上，而这两个是 DSH 的**内置 bundle**（`dsh plugin add` 只管理外部包，不会自动补内置层）。因此首次安装请按下面**完整步骤**操作——只执行 `dsh plugin add` 会得到一个缺 `dsh-web-app` 的 profile，启动时报
+`waiting for service: httpServer`。
+
 ```sh
-# 从 GitHub 安装（建议 pin 到具体 commit/tag）：
-dsh plugin --profile dsh-101 add github:dsh-external/dsh-101#<commit-sha>
+# 1) 初始化 profile 目录（含 dsh-base + dsh-web-app 两层）
+mkdir -p ~/.dsh/profiles/dsh-101
+cat > ~/.dsh/profiles/dsh-101/package.json <<'EOF'
+{
+  "name": "dsh-profile-dsh-101",
+  "private": true,
+  "dependencies": {},
+  "dsh": { "profile": { "bundles": ["@deepseek-ai/dsh-base", "@deepseek-ai/dsh-web-app"] } }
+}
+EOF
 
-# 或者从本地 checkout 安装：
-dsh plugin --profile dsh-101 add .
+# 2) 把本 bundle 加进 profile（会追加到 bundles 列表）
+cd /path/to/this-repo && dsh plugin --profile dsh-101 add .
+# 或从 GitHub（建议 pin 到 tag/commit）：
+# dsh plugin --profile dsh-101 add github:dsh-external/dsh-101#v0.1.0
 
-# 启动阅读器 profile（默认绑定 :3081，由 profile 的 cordis.patch.yml 配置；
-# 没有该 patch 时使用 web profile 的 :3080）：
+# 3) 启动阅读器 profile（默认端口 3080；如需 3081 见下方"端口"）
 dsh --profile dsh-101
 ```
 
-首次 `add` 会用 `@deepseek-ai/dsh-base` 初始化 profile，并把本 bundle 追加到
-`dsh.profile.bundles`（因为包声明了 `dsh.bundle`）。
+验证 bundles 列表应包含三层：
+
+```sh
+python3 -c "import json; print(json.load(open('$HOME/.dsh/profiles/dsh-101/package.json'))['dsh']['profile']['bundles'])"
+# 期望：['@deepseek-ai/dsh-base', '@deepseek-ai/dsh-web-app', '@dsh-external/dsh-101']
+```
+
+### 端口
+
+默认使用 web profile 的 `:3080`。若想与 3080 并存（例如阅读器在 3081），在 profile 的
+`cordis.patch.yml` 里覆盖端口：
+
+```yaml
+- id: webserver
+  config:
+    host: 127.0.0.1
+    port: 3081
+```
 
 > **Git 安装与构建产物。** `lib/` 已提交到本仓库，所以 git 安装直接拿到构建好的
 > host + client bundle —— **无需构建、无需授权**。若在构建前从全新 clone 安装，
