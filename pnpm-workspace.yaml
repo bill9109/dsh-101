@@ -1,0 +1,8 @@
+packages:
+  - .
+
+# Do not auto-install peers: the @deepseek-ai/dsh-* peers are in-box bundles
+# resolved from the DSH installation's module fallback at runtime, not from
+# the npm registry. autoInstallPeers:true would make pnpm try to fetch them
+# from registry.npmjs.org and fail with 404.
+autoInstallPeers: false
