@@ -326,6 +326,8 @@
 
 .pane {
   max-width: 780px;
+  /* Center the pane (home/search/not-found) like the article column. */
+  margin: 0 auto;
 }
 
 .pane h2 {
