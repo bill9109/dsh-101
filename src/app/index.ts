@@ -14,8 +14,8 @@ import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
 import { randomUUID } from 'node:crypto'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import type { Context } from 'cordis'
-import z from 'schemastery'
+import type { Context } from '@deepseek-ai/cordis'
+import z from '@deepseek-ai/schemastery'
 import {
   buildSearchIndex,
   CORPUS_LOCALES,
@@ -631,7 +631,7 @@ export function apply(ctx: Context, config: Config = {}): void {
   )
 }
 
-declare module 'cordis' {
+declare module '@deepseek-ai/cordis' {
   interface Context {
     dsh101: IDsh101
   }

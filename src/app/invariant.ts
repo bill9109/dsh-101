@@ -4,7 +4,7 @@
  */
 
 /* jscpd:ignore-start */
-import type { Context } from 'cordis'
+import type { Context } from '@deepseek-ai/cordis'
 import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
 
 const PACKAGE_NAME = '@deepseek-ai/dsh-101-app'
@@ -15,7 +15,7 @@ export const name = 'dsh-101-app-invariant'
 export const inject = ['invariants']
 
 /**
- * No runtime invariant today: the host service and reader registrations are
+ * No runtime invariant: the host service and reader registrations are
  * behavior-tested directly; the companion reserves the package name for
  * future cross-plugin invariants.
  */

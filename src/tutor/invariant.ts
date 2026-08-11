@@ -4,7 +4,7 @@
  */
 
 /* jscpd:ignore-start */
-import type { Context } from 'cordis'
+import type { Context } from '@deepseek-ai/cordis'
 import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
 
 const PACKAGE_NAME = '@deepseek-ai/dsh-101-tutor'
@@ -15,7 +15,7 @@ export const name = 'dsh-101-tutor-invariant'
 export const inject = ['invariants']
 
 /**
- * No runtime invariant today: the tools, skill registration, and curator
+ * No runtime invariant: the tools, skill registration, and curator
  * gating are behavior-tested directly; the companion reserves the package
  * name for future cross-plugin invariants.
  */

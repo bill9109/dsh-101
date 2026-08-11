@@ -222,7 +222,7 @@ const MODULE_INNER_GROUPS: Record<string, string[]> = {
 function moduleInnerGroup(doc: { module: string; sourcePath: string }): number {
   const prefixes = MODULE_INNER_GROUPS[doc.module]
   if (prefixes === undefined) return 0
-  if (doc.module === 'cordis') {
+  if (doc.module === '@deepseek-ai/cordis') {
     if (doc.sourcePath.startsWith(prefixes[0] ?? '')) return 0
     if (doc.sourcePath.startsWith(prefixes[1] ?? '')) return 1
     return 2
@@ -273,7 +273,7 @@ function docSortKey(doc: { module: string; sourcePath: string }): [number, numbe
 function moduleOf(path: string): { module: string; kind: string } {
   if (path === 'README.md') return { module: 'overview', kind: 'readme' }
   if (path.startsWith('docs/')) {
-    if (path.includes('cordis-') || path === 'docs/cordis-primer.md') return { module: 'cordis', kind: 'reference' }
+    if (path.includes('cordis-') || path === 'docs/cordis-primer.md') return { module: '@deepseek-ai/cordis', kind: 'reference' }
     if (path.includes('catalog')) return { module: 'reference', kind: 'reference' }
     if (path.startsWith('docs/cookbook/')) return { module: 'cookbook', kind: 'docs' }
     if (path.startsWith('docs/')) return { module: 'concepts', kind: 'docs' }
@@ -346,11 +346,6 @@ async function main(): Promise<void> {
     const id = docIdOf(rel)
     const fileStat = await stat(join(REPO, rel))
     if (fileStat.size > MAX_FILE_BYTES) continue
-    // Exclude the dsh-webbridge package: the browser-control plugin ships in
-    // the web-app bundle, not in this reader profile, so its README would
-    // advertise an unavailable tool surface. (Basename + stable id checks so
-    // the guard survives upstream path moves.)
-    if (rel.includes('/dsh-webbridge/') || id.includes('dsh-webbridge')) continue
     // Prefer the git committer date (semantic "last changed"); fall back to
     // the filesystem mtime outside a git checkout.
     const updatedAt = gitTimes.get(rel) ?? new Date(fileStat.mtimeMs).toISOString()
@@ -404,7 +399,7 @@ async function main(): Promise<void> {
   // Cordis), the distinctive Agent Notes decision records, then hands-on
   // material, with reference/dev material and misc trailing.
   const MODULE_PRIORITY = [
-    'overview', 'concepts', 'cordis',
+    'overview', 'concepts', '@deepseek-ai/cordis',
     'notes', 'notes-implemented', 'notes-proposed', 'notes-rejected', 'notes-archived',
     'cookbook', 'reference', 'examples', 'skills', 'packages', 'dev', 'website', 'misc',
   ]

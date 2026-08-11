@@ -1,0 +1,1 @@
+{"id":"apps--web--tests--snapshots--background-task-list--running.expected","variants":{"en":{"title":"apps/web/tests/snapshots/background-task-list/running.expected.md","summary":"- list \"Background tasks\": - listitem: bash sleep 45 running {{duration}}","body":"- list \"Background tasks\":\n  - listitem: bash sleep 45 running {{duration}}","sections":[]}}}

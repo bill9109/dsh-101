@@ -6,7 +6,7 @@
  * @module @deepseek-ai/dsh-101-tutor
  */
 
-import type { Context } from 'cordis'
+import type { Context } from '@deepseek-ai/cordis'
 import type {} from '../app/index.ts'
 import type {} from '@deepseek-ai/dsh-session'
 import type { SessionEvent, SessionId } from '@deepseek-ai/dsh-session'
