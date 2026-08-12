@@ -6,11 +6,6 @@
 - 有一个滑动式隐藏目录
 - 对话在右侧
 
-<img width="3024" height="1898" alt="8852f952459ac4f7ecca2808c5274933" src="https://github.com/user-attachments/assets/04c1f223-fa5b-46a9-ab0d-ec38f6b26e02" />
-
-<img width="3024" height="1898" alt="bad8b574910f7db9157c7d5e3125d54f" src="https://github.com/user-attachments/assets/3cd4b186-4a5f-4d33-9e2e-32e59948b747" />
-
-
 
 ## 安装（profile 分发）
 
