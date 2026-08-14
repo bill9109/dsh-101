@@ -1,4 +1,4 @@
-# dsh-101 — DSH 文档阅读器 profile bundle
+# dsh-101 — DSH 文档阅读模式
 
 [English](README.en.md) | 中文
 
