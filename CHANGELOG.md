@@ -4,6 +4,12 @@ All notable user-facing changes to dsh-101 are documented in this file. The proj
 
 ## [Unreleased]
 
+## [0.1.8] - 2026-08-14
+
+### Fixed
+
+- Removed build-machine paths leaked into the committed `lib/` by the bundler's `//#region` debug comments: an absolute `/Users/.../dsh-101/src/client/ReaderRoot.module.css.mjs` path in `lib/client.js` and two `../../../.dsh/source/staging-.../vendor/...` paths in `lib/index.js`. The labels now use repo-relative names; no personal or machine-specific paths remain in the repository.
+
 ## [0.1.7] - 2026-08-14
 
 ### Changed

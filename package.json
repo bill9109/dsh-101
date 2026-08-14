@@ -1,6 +1,6 @@
 {
   "name": "@bill9109/dsh-101",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "A document-first reader profile bundle for DeepSeek Harness: curated, ordered, searchable, translatable reading of DSH's own documentation over dsh-base + dsh-web-app.",
   "keywords": [
     "deepseek",
