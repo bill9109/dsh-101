@@ -62,15 +62,26 @@ dsh --profile web
 
 ### 端口
 
-默认使用 web profile 的 `:3080`。若想与 3080 并存（例如阅读器在 3081），在 profile 的
-`cordis.patch.yml` 里覆盖端口（或安装时传 `--port 3081`）：
+默认 3081（与 3080 的 web GUI 并存）。两种改法：
+
+**启动时临时指定**（推荐，不改配置，dsh 0.1.0-rc.6+）：
+
+```sh
+dsh --profile dsh-101 --port 8080
+```
+
+**改 profile 配置**（持久化默认端口）：
 
 ```yaml
+# ~/.dsh/profiles/dsh-101/cordis.patch.yml
 - id: webserver
+  inject: [webStartup]
   config:
-    host: 127.0.0.1
-    port: 3081
+    host: !!js ctx.webStartup.host ?? '127.0.0.1'
+    port: !!js ctx.webStartup.port ?? 8080
 ```
+
+（启动参数优先；patch 里的值只是回退默认。）
 
 > **Git 安装与构建产物。** `lib/` 已提交到本仓库，所以 git 安装直接拿到构建好的
 > host + client bundle —— **无需构建、无需授权**。若在构建前从全新 clone 安装，

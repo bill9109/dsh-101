@@ -78,12 +78,14 @@ fi
 
 if [[ -n "$PORT" ]]; then
   cat > "$PROFILE_DIR/cordis.patch.yml" <<EOF
-# dsh-101 reader: bind on port $PORT so it can run alongside the default
-# web profile's GUI on 3080.
+# dsh-101 reader: bind on port $PORT by default so it can run alongside the
+# default web profile's GUI on 3080; override at launch with
+#   dsh --profile dsh-101 --port <n>  (launch flag wins; $PORT is the fallback).
 - id: webserver
+  inject: [webStartup]
   config:
-    host: 127.0.0.1
-    port: $PORT
+    host: !!js ctx.webStartup.host ?? '127.0.0.1'
+    port: !!js ctx.webStartup.port ?? $PORT
 EOF
   echo "==> wrote port patch ($PORT) to $PROFILE_DIR/cordis.patch.yml"
 elif [[ ! -f "$PROFILE_DIR/cordis.patch.yml" ]]; then
