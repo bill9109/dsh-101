@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install @dsh-external/dsh-101 as a standalone `dsh-101` profile.
+# Install @bill9109/dsh-101 as a standalone `dsh-101` profile.
 #
 # DSH distribution model: bundles are distributed, profiles are composed by
 # the user (official docs: "a bundle is what you author and distribute; a

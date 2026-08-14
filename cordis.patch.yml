@@ -26,9 +26,9 @@
     # conversation child slot. Named as the package root so client-modules
     # can resolve package.json and discover the ./client bundle.
     - id: dsh-101-app
-      name: '@dsh-external/dsh-101'
+      name: '@bill9109/dsh-101'
 
     # The tutor plugin: model tools over the corpus, the curator skill, and
     # per-session reading context. Host-only, so the subpath entry is fine.
     - id: dsh-101-tutor
-      name: '@dsh-external/dsh-101/tutor'
+      name: '@bill9109/dsh-101/tutor'
