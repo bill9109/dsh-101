@@ -65,6 +65,7 @@ if [[ -z "$LOCAL_CHECKOUT" ]]; then
   OWNER="${GIT_SPEC%%/*}"
   REST="${GIT_SPEC#*/}"
   REPO="${REST%%/*}"
+  REPO="${REPO%%#*}"
   REF="${GIT_SPEC##*#}"
   [[ "$REF" == "$GIT_SPEC" ]] && REF="main"
   RAW_BASE="https://raw.githubusercontent.com/$OWNER/$REPO/$REF/profile"
@@ -127,9 +128,9 @@ dsh --profile "$PROFILE_NAME" --dump-config >/dev/null 2>&1 || true
 # Install this bundle (pnpm add + append to bundles).
 if [[ "$SOURCE" == "." || "$SOURCE" == "$ROOT" ]]; then
   cd "$ROOT"
-  dsh plugin --profile "$PROFILE_NAME" add .
+  dsh plugin --profile "$PROFILE_NAME" add . --fetch-timeout 600000
 else
-  dsh plugin --profile "$PROFILE_NAME" add "$SOURCE"
+  dsh plugin --profile "$PROFILE_NAME" add "$SOURCE" --fetch-timeout 600000
 fi
 
 echo
