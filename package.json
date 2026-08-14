@@ -1,6 +1,6 @@
 {
   "name": "@dsh-external/dsh-101",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "The DSH 101 profile bundle: document-first reader surface over dsh-base + dsh-web-app (module tree, article reader, search, tutor panel). Single-package aggregation of dsh-101-app, dsh-101-core, and dsh-101-tutor.",
   "type": "module",
   "main": "./lib/index.js",

@@ -12,7 +12,7 @@
 #
 # Why not just `dsh plugin --profile dsh-101 add ...`? `dsh plugin add`
 # initializes an unknown profile name with only `dsh-base` (no template), and
-# this reader needs the `dsh-web-app` layer (httpServer). The profile
+# this reader needs the `dsh-web-app` layer (webServer). The profile
 # directory ships that layer explicitly.
 #
 # Usage:
@@ -20,7 +20,7 @@
 #
 #   source   where to install the bundle from. Default: this repo (local
 #            checkout). Pass a git spec to install from GitHub, e.g.
-#            github:dsh-external/dsh-101#v0.1.0
+#            github:bill9109/dsh-101#v0.1.1
 #   --port N overwrite the profile's cordis.patch.yml to bind port N
 #            (default: keep the shipped port 3081)
 #   --profile NAME  install as NAME instead of dsh-101

@@ -19,7 +19,7 @@
 
 ```sh
 # 从 GitHub 安装（建议 pin 到 tag/commit）：
-bash <(curl -fsSL https://raw.githubusercontent.com/dsh-external/dsh-101/main/scripts/install.sh) github:dsh-external/dsh-101#v0.1.0
+bash <(curl -fsSL https://raw.githubusercontent.com/bill9109/dsh-101/main/scripts/install.sh) github:bill9109/dsh-101#v0.1.1
 
 # 或从本地 checkout 安装，并指定端口（默认 3081）：
 ./scripts/install.sh --port 3081 .
@@ -40,7 +40,7 @@ cp profile/package.json profile/pnpm-workspace.yaml ~/.dsh/profiles/dsh-101/
 # 可选：端口 patch
 cp profile/cordis.patch.yml ~/.dsh/profiles/dsh-101/
 # 安装 bundle（会追加到 bundles 列表）
-dsh plugin --profile dsh-101 add github:dsh-external/dsh-101#v0.1.0
+dsh plugin --profile dsh-101 add github:bill9109/dsh-101#v0.1.1
 dsh --profile dsh-101
 ```
 
@@ -56,7 +56,7 @@ python3 -c "import json; print(json.load(open('$HOME/.dsh/profiles/dsh-101/packa
 如果你不介意 profile 名叫 `web`（官方模板自带 base + web-app），一条命令即可：
 
 ```sh
-dsh plugin --profile web add github:dsh-external/dsh-101#v0.1.0
+dsh plugin --profile web add github:bill9109/dsh-101#v0.1.1
 dsh --profile web
 ```
 
