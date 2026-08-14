@@ -34,7 +34,7 @@ import {
   searchCorpus,
   serializeCuration,
 } from '../core/index.ts'
-import { dshHomePath } from '@deepseek-ai/dsh-paths'
+import { dshHomePath } from '@deepseek-ai/dsh-home-paths'
 import type {} from '@deepseek-ai/dsh-host-webserver'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 
@@ -42,7 +42,7 @@ import type { IncomingMessage, ServerResponse } from 'node:http'
 export const name = 'dsh-101-app'
 
 /** Services required by the host half. */
-export const inject = ['httpServer']
+export const inject = ['webServer']
 
 /** Plugin config. */
 export interface Config {
@@ -626,7 +626,7 @@ export function apply(ctx: Context, config: Config = {}): void {
   }
 
   ctx.effect(
-    () => ctx.httpServer.register({ kind: 'prefix', path: '/api/dsh101', handler: handle }),
+    () => ctx.webServer.register({ kind: 'prefix', path: '/api/dsh101', handler: handle }),
     'dsh-101-app: api routes',
   )
 }
