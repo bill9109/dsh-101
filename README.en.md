@@ -25,7 +25,7 @@ no official command to distribute a profile, but a profile is just a directory u
 
 ```sh
 # Install from GitHub (pin to a tag/commit when possible):
-bash <(curl -fsSL https://raw.githubusercontent.com/bill9109/dsh-101/main/scripts/install.sh) github:bill9109/dsh-101#v0.1.2
+bash <(curl -fsSL https://raw.githubusercontent.com/bill9109/dsh-101/main/scripts/install.sh) github:bill9109/dsh-101#v0.1.3
 
 # Or install from a local checkout, specifying the port (default 3081):
 ./scripts/install.sh --port 3081 .
@@ -47,7 +47,7 @@ cp profile/package.json profile/pnpm-workspace.yaml ~/.dsh/profiles/dsh-101/
 # Optional: port patch
 cp profile/cordis.patch.yml ~/.dsh/profiles/dsh-101/
 # Install the bundle (appends to the bundles list)
-dsh plugin --profile dsh-101 add github:bill9109/dsh-101#v0.1.2
+dsh plugin --profile dsh-101 add github:bill9109/dsh-101#v0.1.3
 dsh --profile dsh-101
 ```
 
@@ -63,7 +63,7 @@ python3 -c "import json; print(json.load(open('$HOME/.dsh/profiles/dsh-101/packa
 If you don't mind the profile being named `web` (the official template already ships base + web-app), one command:
 
 ```sh
-dsh plugin --profile web add github:bill9109/dsh-101#v0.1.2
+dsh plugin --profile web add github:bill9109/dsh-101#v0.1.3
 dsh --profile web
 ```
 
