@@ -2,13 +2,11 @@
 # Install @bill9109/dsh-101 as a standalone `dsh-101` profile.
 #
 # DSH distribution model: bundles are distributed, profiles are composed by
-# the user (official docs: "a bundle is what you author and distribute; a
-# profile is what a user boots with"). There is no official command to
-# distribute a profile, but a profile is just a directory under
-# $DSH_HOME/profiles/<name> with a package.json bundles list + a user patch
-# layer. This script installs the bundled `profile/` directory (base +
-# web-app + this bundle) and then installs the bundle package, so the result
-# is a working `dsh --profile dsh-101` that boots the reader.
+# the user. A profile is a directory under $DSH_HOME/profiles/<name> with a
+# package.json bundles list + a user patch layer. This script installs the
+# bundled `profile/` directory (base + web-app + this bundle) and then
+# installs the bundle package, so the result is a working
+# `dsh --profile dsh-101` that boots the reader.
 #
 # Why not just `dsh plugin --profile dsh-101 add ...`? `dsh plugin add`
 # initializes an unknown profile name with only `dsh-base` (no template), and
@@ -17,16 +15,25 @@
 #
 # Usage:
 #   ./scripts/install.sh [--port 3081] [source]
+#   bash <(curl -fsSL .../install.sh) github:bill9109/dsh-101#v0.1.3
 #
 #   source   where to install the bundle from. Default: this repo (local
-#            checkout). Pass a git spec to install from GitHub, e.g.
-#            github:bill9109/dsh-101#v0.1.1
+#            checkout). Pass a git spec to install from GitHub.
 #   --port N overwrite the profile's cordis.patch.yml to bind port N
 #            (default: keep the shipped port 3081)
 #   --profile NAME  install as NAME instead of dsh-101
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# When run from a checkout (bash scripts/install.sh), ROOT holds the repo;
+# when run via bash <(curl ...) there is no checkout and profile/ files are
+# fetched from raw.githubusercontent.com at the spec's ref instead.
+LOCAL_CHECKOUT=""
+if [[ -f "$(dirname "${BASH_SOURCE[0]}")/../profile/package.json" ]]; then
+  ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+  LOCAL_CHECKOUT=1
+else
+  ROOT=""
+fi
 PROFILE_NAME="dsh-101"
 DSH_HOME_DIR="${DSH_HOME:-$HOME/.dsh}"
 PROFILE_DIR="$DSH_HOME_DIR/profiles/$PROFILE_NAME"
@@ -48,9 +55,28 @@ done
 
 echo "==> dsh-101 install (profile: $PROFILE_NAME, home: $DSH_HOME_DIR)"
 
-# 1) Place the profile directory (package.json bundles list + user patch +
-#    pnpm-workspace.yaml). Existing profiles are kept; the script only fills
-#    missing pieces so user edits survive re-runs.
+# Resolve the profile/ file source: local checkout or GitHub raw at the ref.
+PROFILE_SRC="$ROOT/profile"
+if [[ -z "$LOCAL_CHECKOUT" ]]; then
+  GIT_SPEC="${SOURCE#github:}"
+  GIT_SPEC="${GIT_SPEC#git+}"
+  GIT_SPEC="${GIT_SPEC#https://github.com/}"
+  GIT_SPEC="${GIT_SPEC%.git}"
+  OWNER="${GIT_SPEC%%/*}"
+  REST="${GIT_SPEC#*/}"
+  REPO="${REST%%/*}"
+  REF="${GIT_SPEC##*#}"
+  [[ "$REF" == "$GIT_SPEC" ]] && REF="main"
+  RAW_BASE="https://raw.githubusercontent.com/$OWNER/$REPO/$REF/profile"
+  echo "==> remote install: fetching profile files from $RAW_BASE"
+  PROFILE_SRC="$RAW_BASE"
+fi
+
+fetch_file() {
+  if [[ -n "$LOCAL_CHECKOUT" ]]; then cp "$PROFILE_SRC/$1" "$2";
+  else curl -fsSL --max-time 60 "$PROFILE_SRC/$1" -o "$2"; fi
+}
+
 mkdir -p "$PROFILE_DIR"
 if [[ -f "$PROFILE_DIR/package.json" ]]; then
   echo "==> profile exists; ensuring dsh-base + dsh-web-app layers present"
@@ -68,12 +94,12 @@ with open(path, 'w') as f:
     f.write('\n')
 PYEOF
 else
-  cp "$ROOT/profile/package.json" "$PROFILE_DIR/package.json"
+  fetch_file "package.json" "$PROFILE_DIR/package.json"
   echo "==> wrote $PROFILE_DIR/package.json"
 fi
 
 if [[ ! -f "$PROFILE_DIR/pnpm-workspace.yaml" ]]; then
-  cp "$ROOT/profile/pnpm-workspace.yaml" "$PROFILE_DIR/pnpm-workspace.yaml"
+  fetch_file "pnpm-workspace.yaml" "$PROFILE_DIR/pnpm-workspace.yaml"
 fi
 
 if [[ -n "$PORT" ]]; then
@@ -89,17 +115,16 @@ if [[ -n "$PORT" ]]; then
 EOF
   echo "==> wrote port patch ($PORT) to $PROFILE_DIR/cordis.patch.yml"
 elif [[ ! -f "$PROFILE_DIR/cordis.patch.yml" ]]; then
-  cp "$ROOT/profile/cordis.patch.yml" "$PROFILE_DIR/cordis.patch.yml"
+  fetch_file "cordis.patch.yml" "$PROFILE_DIR/cordis.patch.yml"
 fi
 
-# 2) Prime the DSH module fallback ($DSH_HOME/profiles/node_modules) so pnpm
-#    can resolve the in-box @deepseek-ai/* peers (they are NOT on npm, and the
-#    fallback is only created when dsh boots). --dump-config triggers the same
-#    prepareProfile → healProfilesModuleFallback path without booting a server.
+# Prime the DSH module fallback so pnpm can resolve the in-box @deepseek-ai/*
+# peers. --dump-config triggers the same prepareProfile ->
+# healProfilesModuleFallback path without booting a server.
 echo "==> priming DSH module fallback..."
 dsh --profile "$PROFILE_NAME" --dump-config >/dev/null 2>&1 || true
 
-# 3) Install this bundle (pnpm add + append to bundles).
+# Install this bundle (pnpm add + append to bundles).
 if [[ "$SOURCE" == "." || "$SOURCE" == "$ROOT" ]]; then
   cd "$ROOT"
   dsh plugin --profile "$PROFILE_NAME" add .
@@ -109,5 +134,4 @@ fi
 
 echo
 echo "==> done. Verify + boot:"
-echo "    python3 -c \"import json; print(json.load(open('$PROFILE_DIR/package.json'))['dsh']['profile']['bundles'])\""
 echo "    dsh --profile $PROFILE_NAME"
