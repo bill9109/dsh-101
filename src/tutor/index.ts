@@ -83,12 +83,14 @@ export function apply(ctx: Context): void {
   )
 
   // Curator trigger: a user message carrying the marker registers the session
-  // with a fresh job token (only the first occurrence per session matters).
+  // with the host service's curation job token (only the first occurrence per
+  // session matters). The token must be the service's own jobToken — the one
+  // `dsh101_publish` and the reader's HTTP publish endpoint validate against.
   ctx.on('session/event', (session: { id: SessionId }, event: SessionEvent) => {
     if (event.type !== 'user/message') return
     const text = extractMessageText(event)
     if (text !== undefined && isCuratorTrigger(text) && !curator.isCurator(session.id)) {
-      curator.register(session.id)
+      curator.register(session.id, dsh101.jobToken)
       ctx.logger.info(`dsh-101-tutor: session ${session.id} registered as curator session`)
     }
   })

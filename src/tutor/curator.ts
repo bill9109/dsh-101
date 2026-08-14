@@ -2,9 +2,11 @@
  * DSH 101 tutor: curator-session ledger and the curator skill content.
  *
  * A curator session is an ordinary session whose first user message carries
- * the trigger marker; the plugin registers it with a fresh job token that
- * `dsh101_publish` must present. The ledger is in-memory: a restarted server
- * requires a fresh curator trigger, which the reader's update banner provides.
+ * the trigger marker; the plugin registers it with the host service's curation
+ * job token (`ctx.dsh101.jobToken`), the same token `dsh101_publish` and the
+ * reader's HTTP publish endpoint validate against. The ledger is in-memory: a
+ * restarted server requires a fresh curator trigger, which the reader's update
+ * banner provides.
  *
  * @module @deepseek-ai/dsh-101-tutor
  */
@@ -19,9 +21,12 @@ const MAX_CURATOR_SESSIONS = 64
 export class CuratorLedger {
   #tokens = new Map<string, string>()
 
-  /** Register a curator session with a fresh job token. Returns the token. */
-  register(sessionId: string): string {
-    const token = crypto.randomUUID()
+  /**
+   * Register a curator session with the host-provided curation job token
+   * (the same token the service's `publish` validates against). Returns the
+   * token.
+   */
+  register(sessionId: string, token: string): string {
     this.#tokens.set(sessionId, token)
     if (this.#tokens.size > MAX_CURATOR_SESSIONS) {
       const oldest = this.#tokens.keys().next().value
