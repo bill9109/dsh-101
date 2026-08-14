@@ -58,14 +58,12 @@ python3 -c "import json; print(json.load(open('$HOME/.dsh/profiles/dsh-101/packa
 # expected: ['@deepseek-ai/dsh-base', '@deepseek-ai/dsh-web-app', '@bill9109/dsh-101']
 ```
 
-### Alternative: install into the official `web` profile (not recommended)
-
-If you don't mind the profile being named `web` (the official template already ships base + web-app), one command:
-
-```sh
-dsh plugin --profile web add github:bill9109/dsh-101#v0.1.4
-dsh --profile web
-```
+> **Do NOT install into the `web` profile.** dsh-101's bundle disables `ui-layout`
+> (the default browser shell); installed into any web-app profile it takes down the
+> whole web (sidebar / conversation / app-shell all wait for the `layout` service and
+> stay pending). Always use dsh-101 as its own profile (`dsh --profile dsh-101`,
+> default port 3081, coexists with the web GUI on 3080). `install.sh` now rejects
+> `--profile web` outright.
 
 ### Port
 

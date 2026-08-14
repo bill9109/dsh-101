@@ -57,14 +57,11 @@ python3 -c "import json; print(json.load(open('$HOME/.dsh/profiles/dsh-101/packa
 # 期望：['@deepseek-ai/dsh-base', '@deepseek-ai/dsh-web-app', '@bill9109/dsh-101']
 ```
 
-### 备选：装进官方 `web` profile（不建议）
-
-如果你不介意 profile 名叫 `web`（官方模板自带 base + web-app），一条命令即可：
-
-```sh
-dsh plugin --profile web add github:bill9109/dsh-101#v0.1.4
-dsh --profile web
-```
+> **不要装进 `web` profile。** dsh-101 的 bundle 会禁用 `ui-layout`（默认浏览器外壳），
+> 装进 web-app 系 profile 会连坐搞挂 web（sidebar / conversation / app-shell 全部等待
+> `layout` 服务而 pending，web 起不来）。dsh-101 请始终作为独立 profile 使用
+> （`dsh --profile dsh-101`，默认 3081 端口，可与 3080 的 web 并存）。`install.sh`
+> 已对 `--profile web` 直接拒绝。
 
 ### 端口
 

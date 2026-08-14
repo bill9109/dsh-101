@@ -53,6 +53,14 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+if [[ "$PROFILE_NAME" == "web" ]]; then
+  echo "error: dsh-101 cannot be installed into the web profile — its bundle disables"
+  echo "  ui-layout (the web shell), which breaks web (sidebar/conversation/app-shell"
+  echo "  all wait for the layout service). Use the default dsh-101 profile instead"
+  echo "  (or --profile <other-name>) and boot it alongside web on its own port." >&2
+  exit 1
+fi
+
 echo "==> dsh-101 install (profile: $PROFILE_NAME, home: $DSH_HOME_DIR)"
 
 # Resolve the profile/ file source: local checkout or GitHub raw at the ref.
